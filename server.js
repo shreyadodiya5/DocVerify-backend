@@ -41,19 +41,6 @@ const app = express();
 
 // Security Middleware
 app.use(helmet());
-
-// CORS config
-app.use(
-  cors({
-    origin: [
-      process.env.FRONTEND_URL,
-      "http://localhost:5173",
-      "http://127.0.0.1:5173",
-      "https://doc-verify-frontend-teal.vercel.app/"
-    ].filter(Boolean),
-    credentials: true,
-  })
-);
 // Handle preflight FIRST, before anything else
 app.options("*", (req, res) => {
   res.setHeader("Access-Control-Allow-Origin", req.headers.origin || "*");
@@ -62,6 +49,19 @@ app.options("*", (req, res) => {
   res.setHeader("Access-Control-Allow-Credentials", "true");
   res.sendStatus(204);
 });
+// CORS config
+app.use(
+  cors({
+    origin: [
+      process.env.FRONTEND_URL,
+      "http://localhost:5173",
+      "http://127.0.0.1:5173",
+      "https://doc-verify-frontend-teal.vercel.app"
+    ].filter(Boolean),
+    credentials: true,
+  })
+);
+
 // Rate limiting
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
