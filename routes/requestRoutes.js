@@ -1,5 +1,6 @@
 import express from 'express';
 import { protect } from '../middleware/authMiddleware.js';
+import { managerOnly, clientOnly } from '../middleware/roleMiddleware.js';
 import {
   createRequest,
   getRequests,
@@ -7,22 +8,21 @@ import {
   updateRequestStatus,
   deleteRequest,
   verifyAccessToken,
-  resendNotification
+  resendNotification,
+  submitRequestForReview,
 } from '../controllers/requestController.js';
 
 const router = express.Router();
 
 router.get('/verify/:token', verifyAccessToken);
 
-router.route('/')
-  .post(protect, createRequest)
-  .get(protect, getRequests);
+router.route('/').post(protect, managerOnly, createRequest).get(protect, getRequests);
 
-router.route('/:id')
-  .get(protect, getRequestById)
-  .delete(protect, deleteRequest);
+router.post('/:id/submit', protect, clientOnly, submitRequestForReview);
 
-router.put('/:id/status', protect, updateRequestStatus);
-router.post('/:id/resend', protect, resendNotification);
+router.route('/:id').get(protect, getRequestById).delete(protect, managerOnly, deleteRequest);
+
+router.put('/:id/status', protect, managerOnly, updateRequestStatus);
+router.post('/:id/resend', protect, managerOnly, resendNotification);
 
 export default router;

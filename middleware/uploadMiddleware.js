@@ -3,12 +3,21 @@ import multer from 'multer';
 const storage = multer.memoryStorage();
 
 const fileFilter = (req, file, cb) => {
-  const allowedMimeTypes = ['image/jpeg', 'image/png', 'image/jpg', 'application/pdf'];
-  
+  const allowedMimeTypes = [
+    'image/jpeg',
+    'image/png',
+    'image/jpg',
+    'application/pdf',
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  ];
+
   if (allowedMimeTypes.includes(file.mimetype)) {
     cb(null, true);
   } else {
-    cb(new Error('Invalid file type. Only JPEG, PNG, and PDF files are allowed.'), false);
+    cb(
+      new Error('Invalid file type. Allowed: PDF, JPG, PNG, DOCX.'),
+      false
+    );
   }
 };
 

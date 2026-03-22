@@ -9,6 +9,13 @@ export const buildPublicUploadLink = (accessToken) => {
   return `${base}/upload/${accessToken}`;
 };
 
+export const buildVerificationLink = (token) => {
+  // HARDCODED FOR TESTING:
+  const base = 'http://10.72.188.129:5173';
+  console.log(`[CRITICAL DIAGNOSTIC] buildVerificationLink called. Using base: ${base}`);
+  return `${base}/verify-email/${token}`;
+};
+
 const createTransporter = () => {
   return nodemailer.createTransport({
     host: process.env.EMAIL_HOST,
@@ -129,6 +136,48 @@ export const sendApprovalEmail = async (to, recipientName, requesterName) => {
           <p>All your submitted documents have been reviewed and approved by <strong>${requesterName}</strong>.</p>
           <p>No further action is required from your side.</p>
           <p>Thank you for using our secure document verification portal.</p>
+        </div>
+      </div>
+    `,
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+  } catch (error) {
+    console.error('Email send error:', error.message);
+  }
+};
+
+export const sendVerificationEmail = async (to, name, verificationLink) => {
+  if (!process.env.EMAIL_HOST) {
+    return console.warn('Email not sent (Nodemailer not configured): sendVerificationEmail');
+  }
+  const transporter = createTransporter();
+  
+  const mailOptions = {
+    from: process.env.EMAIL_FROM,
+    to,
+    subject: 'Please verify your email address',
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #333 text-align: center;">
+        <div style="background-color: #1E40AF; padding: 20px;">
+          <h1 style="color: white; margin: 0;">DocVerify</h1>
+        </div>
+        <div style="padding: 30px; border: 1px solid #ddd; text-align: left;">
+          <h2>Welcome to DocVerify, ${name}!</h2>
+          <p>Thank you for signing up. Please verify your email address to activate your account and start using our secure document platform.</p>
+          
+          <div style="text-align: center; margin: 30px 0;">
+            <a href="${verificationLink}" style="background-color: #3B82F6; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold; display: inline-block;">Verify Email Address</a>
+          </div>
+          
+          <p style="color: #666; font-size: 14px;">If the button above doesn't work, copy and paste this link into your browser:</p>
+          <p style="color: #3B82F6; font-size: 12px; word-break: break-all;">${verificationLink}</p>
+          
+          <p style="color: #666; font-size: 14px; margin-top: 20px;">This link will expire in 24 hours.</p>
+        </div>
+        <div style="text-align: center; padding: 20px; font-size: 12px; color: #666;">
+          <p>&copy; ${new Date().getFullYear()} DocVerify. All rights reserved.</p>
         </div>
       </div>
     `,

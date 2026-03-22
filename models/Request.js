@@ -14,10 +14,10 @@ const requestSchema = new mongoose.Schema({
   recipientPhone: { type: String, required: true },
   description: { type: String },
   requiredDocuments: [requiredDocumentSchema],
-  status: { 
-    type: String, 
-    enum: ['pending', 'submitted', 'under_review', 'approved', 'rejected'], 
-    default: 'pending' 
+  status: {
+    type: String,
+    enum: ['pending', 'in_progress', 'submitted', 'under_review', 'approved', 'rejected'],
+    default: 'pending',
   },
   accessToken: { type: String, unique: true, required: true },
   accessTokenExpiry: { type: Date, required: true },
