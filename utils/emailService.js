@@ -11,7 +11,7 @@ export const buildPublicUploadLink = (accessToken) => {
 
 export const buildVerificationLink = (token) => {
   // HARDCODED FOR TESTING:
-  const base = 'http://10.72.188.129:5173';
+  const base = process.env.FRONTEND_URL || 'http://localhost:5173';
   console.log(`[CRITICAL DIAGNOSTIC] buildVerificationLink called. Using base: ${base}`);
   return `${base}/verify-email/${token}`;
 };
