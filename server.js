@@ -48,12 +48,20 @@ app.use(
     origin: [
       process.env.FRONTEND_URL,
       "http://localhost:5173",
-      "http://127.0.0.1:5173"
+      "http://127.0.0.1:5173",
+      "https://doc-verify-frontend-teal.vercel.app/"
     ].filter(Boolean),
     credentials: true,
   })
 );
-
+// Handle preflight FIRST, before anything else
+app.options("*", (req, res) => {
+  res.setHeader("Access-Control-Allow-Origin", req.headers.origin || "*");
+  res.setHeader("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  res.setHeader("Access-Control-Allow-Credentials", "true");
+  res.sendStatus(204);
+});
 // Rate limiting
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
